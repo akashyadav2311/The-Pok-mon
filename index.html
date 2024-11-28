@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <input type="text" placeholder="Enter number of cards">
+        <div><label for="category">Category:</label></div>
+        <select id="category">
+            <option value="normal">normal</option>
+            <option value="fighting">fighting</option>
+            <option value="ground">ground</option>
+            <option value="poison">poison</option>
+            <option value="rock">rock</option>
+        </select>
+        <button onclick="getCard()">Submit</button>
+        <div id="container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;"></div>
+    </body>
+
+    <script>
+        function getCard() {
+            const numberofCards = document.querySelector('input').value;
+            const category = document.querySelector('select').value;
+            console.log(category);
+
+            function fetchPokemon(obj) {
+                const name = obj.pokemon.name;
+                const url = obj.pokemon.url;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(pokeData => {
+                        createPokemon(pokeData);
+                    })
+            }
+
+            fetchPokemonData(category);
+            function fetchPokemonData(category) {
+                fetch(`https://pokeapi.co/api/v2/type/${category}`)
+                    .then(response => response.json())
+                    .then(function (pokeData) {
+                        console.log(pokeData);
+                        renderPokemon(pokeData.pokemon);
+                    })
+            }
+
+            function renderPokemon(arrOfPokemons) {
+                console.log(arrOfPokemons);
+
+                for (let i = 0; i < numberofCards; i++) {
+                    const newPokemon = fetchPokemon(arrOfPokemons[i]);
+                }
+            }
+        }
+
+        function createPokemon(pokeData) {
+            const PokemonDiv = document.createElement('div');
+            let Pokename = document.createElement('h4');
+            Pokename.innerText = pokeData.name;
+            let PokeNumber = document.createElement('p');
+            PokeNumber.innerText = `#${pokeData.id}`;
+            let pokeTypes = document.createElement('ul');
+            let pokeImagediv = document.createElement('div');
+            const pokeImage = createPokeImage(pokeData, pokeImagediv);
+            PokemonDiv.appendChild(Pokename);
+            PokemonDiv.appendChild(PokeNumber);
+            PokemonDiv.appendChild(pokeImage);
+            const Maindiv = document.getElementById('container');
+            Maindiv.appendChild(PokemonDiv);
+        }
+
+        function createPokeImage(pokeData, containerDiv) {
+            let pokeImage = document.createElement('img');
+            pokeImage.src = pokeData.sprites.front_default;
+            return pokeImage;
+        }
+    </script>
+</html>
